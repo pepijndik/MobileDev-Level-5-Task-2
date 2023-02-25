@@ -18,6 +18,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import nl.pdik.level5.task2.ui.screens.HomeScreen
+import nl.pdik.level5.task2.ui.screens.QuestScreen
 import nl.pdik.level5.task2.ui.screens.Screens
 import nl.pdik.level5.task2.ui.theme.Task2Theme
 import nl.pdik.level5.task2.viewModel.QuestViewModel
@@ -54,10 +56,10 @@ fun QuestAppNavHost(
         modifier = modifier
     ) {
         composable(Screens.HomeScreen.route) {
-
+            HomeScreen(viewModel = viewModel, navController)
         }
         composable(Screens.QuestScreen.route) {
-
+            QuestScreen(viewModel = viewModel,navController)
         }
 
     }

@@ -19,7 +19,7 @@ class QuestViewModel(application: Application) : AndroidViewModel(application) {
     val errorText: LiveData<String>
         get() = _errorText
 
-    fun getProfile() {
+    fun getQuests() {
         viewModelScope.launch {
             try {
                 questRepository.getQuest()

@@ -11,7 +11,7 @@ import nl.pdik.level5.task2.model.Quest
 
 class QuestRepository {
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var questDocument = firestore.collection("questions").orderBy("id");
+    private var questDocument = firestore.collection("questions");
 
     private val _quests: MutableLiveData<List<Quest>> = MutableLiveData()
 
@@ -27,12 +27,13 @@ class QuestRepository {
     suspend fun getQuest() {
         try {
             withTimeout(5_000) {
-                val quests = questDocument.get().await();
                 val list = mutableStateListOf<Quest>();
-                for (data in quests) {
-                    list.add(data.toObject<Quest>());
+                questDocument.get().addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        list.add(document.toObject<Quest>(Quest::class.java));
+                    }
                 }
-              _quests.value = list;
+                _quests.value = list;
             }
         } catch (e: Exception) {
             throw QuestsRetrievalError("Retrieval-firebase-task was unsuccessful")

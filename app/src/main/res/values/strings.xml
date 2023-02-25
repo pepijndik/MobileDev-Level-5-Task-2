@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">task2</string>
+    <string name="app_name">My Quest</string>
+    <string name="header">Welcome to My Quest</string>
+    <string name="desc">After pressing "Start" the quizz will start</string>
+    <string name="amount_quests">%d/%d</string>
+    <string name="start">Start</string>
+    <string name="submit">Confirm</string>
+    <string name="not_correct">Not correct</string>
 </resources>
