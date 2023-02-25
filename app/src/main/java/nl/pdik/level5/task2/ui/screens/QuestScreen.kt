@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import nl.pdik.level5.task2.R
 import nl.pdik.level5.task2.model.Quest
 import nl.pdik.level5.task2.viewModel.QuestViewModel
+import java.util.ArrayList
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -31,15 +32,15 @@ fun QuestScreen(viewModel: QuestViewModel, navController: NavController) {
     viewModel.getQuests()
     val errorMsg by viewModel.errorText.observeAsState()
     val quests by viewModel.quests.observeAsState();
-    val quest = remember { quests?.let { mutableStateOf(it[0]) } }
-//    val quest = Quest(
-//        arrayOf<String>("answer 1-1 correct", "answer 2"),
-//        "answer 1-1 correct",
-//        1,
-//        "Question 1"
-//    )
-
-
+    val current_questNumber = remember {
+        mutableStateOf(0)
+    };
+    val quest = remember {
+        mutableStateOf<Quest?>(null)
+    };
+    if (quests?.get(current_questNumber.value) != null) {
+        quest.value = quests!!.get(current_questNumber.value)
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -47,10 +48,11 @@ fun QuestScreen(viewModel: QuestViewModel, navController: NavController) {
             )
         },
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            if (quest != null) {
+        if (quests?.get(0) != null) {
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -61,8 +63,8 @@ fun QuestScreen(viewModel: QuestViewModel, navController: NavController) {
                     Text(
                         text = stringResource(
                             id = R.string.amount_quests,
-                            1,
-                            quest.value.choices.size
+                            current_questNumber.value + 1,
+                            quests!!.size
                         )
                     )
                 }
@@ -73,16 +75,25 @@ fun QuestScreen(viewModel: QuestViewModel, navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Choices(quest.value, selected = selected)
+                    Choices(quest.value!!, selected = selected)
                     Row(
                         verticalAlignment = Alignment.Bottom
                     ) {
                         Button(onClick = {
-                            if (!selected.value.equals(quest.value.correctAnswer)) informUser(
+                            if (!selected.value.equals(quest.value!!.correctAnswer)) informUser(
                                 context,
                                 R.string.not_correct
                             )
 
+                            if (quests?.size == current_questNumber.value +1 && selected.value.equals(
+                                    quest.value!!.correctAnswer
+                                )
+                            ) {
+                                navController.navigate(Screens.HomeScreen.route);
+                            } else if (quests?.size!! > current_questNumber.value + 1) {
+                                current_questNumber.value = current_questNumber.value + 1;
+                                quest.value = quests?.get(current_questNumber.value);
+                            }
                         }) {
                             Text(
                                 text = stringResource(id = R.string.submit),
@@ -92,8 +103,10 @@ fun QuestScreen(viewModel: QuestViewModel, navController: NavController) {
                     }
                 }
 
+
             }
         }
+
     }
 }
 

@@ -12,28 +12,27 @@ import nl.pdik.level5.task2.model.Quest
 class QuestRepository {
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var questDocument = firestore.collection("questions");
+    private val questList = MutableLiveData<List<Quest>>()
 
-    private val _quests: MutableLiveData<List<Quest>> = MutableLiveData()
-
-    val quests: LiveData<List<Quest>>
-        get() = _quests
-
-    // The CreateProfileFragment can use this to see if creation succeeded
-    private val _createSuccess: MutableLiveData<Boolean> = MutableLiveData()
-
-    val createSuccess: LiveData<Boolean>
-        get() = _createSuccess
+    val quests: MutableLiveData<List<Quest>>
+        get() = questList
 
     suspend fun getQuest() {
         try {
             withTimeout(5_000) {
-                val list = mutableStateListOf<Quest>();
-                questDocument.get().addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        list.add(document.toObject<Quest>(Quest::class.java));
+                questDocument.addSnapshotListener { querySnapshot, _ ->
+                    if (querySnapshot != null) {
+                        val quests = querySnapshot.documents.map { documentSnapshot ->
+                            Quest(
+                                documentSnapshot["choices"] as ArrayList<String>,
+                                documentSnapshot["correctAnswer"] as String,
+                                documentSnapshot["id"] as Long,
+                                documentSnapshot["question"] as String
+                            )
+                        }
+                        questList.value = quests
                     }
                 }
-                _quests.value = list;
             }
         } catch (e: Exception) {
             throw QuestsRetrievalError("Retrieval-firebase-task was unsuccessful")
@@ -41,7 +40,7 @@ class QuestRepository {
     }
 
     fun reset() {
-        _createSuccess.value = false
+
     }
 
     class QuestsRetrievalError(message: String) : Exception(message)

@@ -13,10 +13,10 @@ import nl.pdik.level5.task2.repository.QuestRepository
 class QuestViewModel(application: Application) : AndroidViewModel(application) {
     private val TAG = "FIRESTORE"
     private val questRepository: QuestRepository = QuestRepository()
-    val quests: LiveData<List<Quest>> = questRepository.quests
+    val quests: MutableLiveData<List<Quest>> = questRepository.quests
 
     private val _errorText: MutableLiveData<String> = MutableLiveData()
-    val errorText: LiveData<String>
+    val errorText: MutableLiveData<String>
         get() = _errorText
 
     fun getQuests() {
