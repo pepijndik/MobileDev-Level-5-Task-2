@@ -84,13 +84,17 @@ fun QuestScreen(viewModel: QuestViewModel, navController: NavController) {
                                 context,
                                 R.string.not_correct
                             )
-
-                            if (quests?.size == current_questNumber.value +1 && selected.value.equals(
+                            else if
+                                         (quests?.size == current_questNumber.value + 1 && selected.value.equals(
                                     quest.value!!.correctAnswer
                                 )
                             ) {
                                 navController.navigate(Screens.HomeScreen.route);
-                            } else if (quests?.size!! > current_questNumber.value + 1) {
+                            } else if
+                                           (quests?.size!! > current_questNumber.value + 1 && selected.value.equals(
+                                    quest.value!!.correctAnswer
+                                )
+                            ) {
                                 current_questNumber.value = current_questNumber.value + 1;
                                 quest.value = quests?.get(current_questNumber.value);
                             }
